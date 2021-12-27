@@ -1,0 +1,29 @@
+insert into students values
+(22,'Dustin','dustin@cs',3.4,45),
+(29,'Brutus','brutus@psi',2.5,33),
+(31,'Lubber','lubber@math',3.2,55),
+(32,'Andy','andy@cs',3.8,25),
+(58,'Rusty','rusty@math',2.8,35),
+(64,'Horatio','horatio@cs',3.1,35),
+(71,'Zorba','zorba@phys',2.7,16),
+(74,'Horatio','horatio@math',3.7,36),
+(85,'Art','art@music',4.0,25),
+(95,'Bob','bob@psi',3.1,63),
+(98,'Laguer','laguer@music',4.2,28);
+
+insert into courses values
+('160:101','Intro to Chemistry','chem'),
+('198:111','Intro to CS','cs'),
+('640:251','Calculus I','math'),
+('198:336','Databases','cs');
+
+insert into enrolledin values
+(22,'160:101','A'),
+(22,'198:111','C'),
+(22,'640:251','B'),
+(22,'198:336','A'),
+(31,'198:111','F'),
+(31,'640:251','B'),
+(31,'198:336','D'),
+(64,'160:101','C'),
+(74,'640:251','C');

@@ -1,0 +1,184 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2578
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset134 PingFangSC-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c100000\c100000\c99985\c0;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl360\slmult1\partightenfactor0
+
+\f0\fs24 \cf2 \cb3 \expnd0\expndtw0\kerning0
+1)\
+CREATE TABLE Students(  \
+	sid INT,     \
+	name VARCHAR(20),     \
+    	age INT,\
+	gpa FLOAT,  \
+  	PRIMARY KEY (sid) \
+);\
+CREATE TABLE Courses(  \
+	cid VARCHAR(6),     \
+	deptid VARCHAR(10),\
+	name VARCHAR(20),     \
+   	PRIMARY KEY (cid)\
+);\
+CREATE TABLE Professors(  \
+	ssn VARCHAR(11),\
+	name VARCHAR(20),\
+	address VARCHAR(100),  \
+	phone INT,\
+	deptid VARCHAR(10),\
+   	PRIMARY KEY (ssn)\
+);\
+CREATE TABLE Teaches(  \
+	cid VARCHAR(6),     \
+	section INT,\
+	ssn VARCHAR(11),\
+   	PRIMARY KEY (cid, section),\
+	FOREIGN KEY (cid) REFERENCES Courses(cid),\
+	FOREIGN KEY (ssn) REFERENCES Professors(ssn)\
+);\
+CREATE TABLE Enrollment(  \
+	sid INT,     \
+	cid VARCHAR(6),\
+	section INT,\
+	grade CHAR(2),\
+	PRIMARY KEY (sid, cid),     \
+	FOREIGN KEY (sid) REFERENCES Students(sid),\
+	FOREIGN KEY (cid) REFERENCES Courses(cid),\
+	FOREIGN KEY (cid, section) REFERENCES Teaches(cid,section)\
+);\
+\
+2)\
+SELECT name \
+FROM Professors \
+WHERE deptid = 'cs' ;\
+\
+3)\
+SELECT e.sid\
+FROM Enrollment e, Courses c\
+WHERE c.cid = e.cid \
+AND c.deptid = 'cs' ;\
+	\
+4)\
+SELECT p.ssn
+\f1 , p.
+\f0 name\
+FROM Professors p\
+WHERE p.deptid = 'cs'\
+AND p.ssn NOT IN (	  \
+		SELECT p.ssn\
+		FROM    Professors p, Teaches t, Courses c\
+		WHERE p.ssn = t.ssn\
+		AND t.cid = c.cid\
+		AND c.deptid = 'cs'\
+		);\
+\
+5) \
+SELECT deptid, COUNT(cid)\
+FROM Courses \
+GROUP BY deptid ; \
+\
+6)\
+SELECT deptid, COUNT(cid)\
+FROM Courses \
+GROUP BY deptid \
+HAVING COUNT(cid) > 10 ;\
+\
+7)\
+SELECT DISTINCT s.name \
+FROM Students s, Enrollment e, Professors s, Teaches t\
+WHERE s.sid = e.sid\
+AND e.cid = p.cid\
+AND s.ssn = t.ssn\
+AND p.name LIKE \'91M%\'92 ;\
+\
+8)\
+SELECT deptid, \
+	    COUNT(sid) < 30 AS \'91small\'92,\
+	    COUNT(sid) >= 30 AND COUNT(sid) < 80 AS \'91medium\'92,\
+               COUNT(sid) >= 80 AS \'91large\'92\
+FROM Enrollment e, Courses c\
+WHERE e.cid = c.cid\
+GROUP BY deptid ;\
+\
+9)\
+SELECT p.name\
+FROM Professors p, Courses c\
+WHERE p.deptid = c.deptid\
+GROUP BY p.name \
+HAVING COUNT(p.name) > 20 \
+			AND COUNT(sid) = \'91large\'92 \
+			AND COUNT(sid) > \'91medium\'92 + \'91small\'92 \
+			FROM Course;\
+\
+10)\
+SELECT e.section, e.grade, (COUNT(e.grade)* 100 / (SELECT COUNT(*)\
+FROM Enrollment \
+WHERE e.grade in ('D','F')) )'Failed_Percentage' \
+FROM Enrollment e, courses c \
+WHERE e.cid = c.cid\
+GROUP BY e.section, e.grade;       \
+\
+11)\
+SELECT DISTINCT p.name\
+FROM Professors p, Enrollment e\
+WHERE MAX(\
+		COUNT(\
+			SELECT *\
+			FROM Students s, Enrollment e\
+			WHERE s.sid = e.sid\
+			AND e.grade = \'91D\'92 \
+			OR e.grade = \'91F\'92\
+	 		 ) * 100 / (\
+				SELECT COUNT(*)\
+				FROM Students s, Enrollment e\
+				WHERE s.sid = e.sid\
+			 	)\
+GROUP BY p.name ;\
+\
+12) \
+SELECT c.cid,\
+	    COUNT(\
+		SELECT *\
+		FROM Students s, Enrollment e\
+		WHERE s.sid = e.sid\
+		AND e.grade = \'91D\'92 \
+		OR e.grade = \'91F\'92\
+	 	 ) * 100 / (\
+			SELECT COUNT(*)\
+			FROM Students s, Enrollment e\
+			WHERE s.sid = e.sid\
+		 	)\
+	    ) AS \'91Failed_Percentage\'92\
+FROM  Enrollment e, Courses c\
+WHERE e.cid = c.cid\
+GROUP BY c.cid ;\
+\
+13)\
+SELECT section \
+FROM enrollment e, courses c \
+WHERE grade in('F','D')\
+GROUP BY section \
+HAVING count(grade)>(SELECT AVG(section) FROM enrollment);\
+\
+14)\
+SELECT @TotalStudent := COUNT(sid) \
+FROM Students;\
+SELECT deptid,\
+	(Sum(ACount) / @TotalStudent)*100 AS 'A%',\
+	(Sum(BCount) / @TotalStudent)*100 AS 'B%',\
+	(Sum(CCount) / @TotalStudent)*100 AS 'C%',\
+	(Sum(DCount) / @TotalStudent)*100 AS 'D%',\
+	(Sum(ECount) / @TotalStudent)*100 AS 'E%',\
+	(Sum(FCount) / @TotalStudent)*100 AS 'F%'\
+FROM Courses c;\
+SELECT DISTINCT, e.sid, c.did, e.section, \
+CASE WHEN (e.grade = 'A') THEN 1 ELSE 0 END AS ACount,\
+CASE WHEN (e.grade = 'B') THEN 1 ELSE 0 END AS BCount,\
+CASE WHEN (e.grade = 'C') THEN 1 ELSE 0 END AS CCount,\
+CASE WHEN (e.grade = 'D') THEN 1 ELSE 0 END AS DCount,\
+CASE WHEN (e.grade = 'E') THEN 1 ELSE 0 END AS ECount\
+From Enrollment e, Courses c\
+WHERE c.cid = e.cid\
+GROUP BY e.deptid ;\
+}

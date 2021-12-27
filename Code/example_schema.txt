@@ -1,0 +1,26 @@
+drop database if exists examples;
+create database examples;
+use examples;
+
+create table students(
+   sid int primary key,
+   name varchar(30),
+   login varchar(20),
+   gpa real,
+   age int
+);
+
+create table courses(
+   cid char(7) primary key,
+   name varchar(20),
+   dept varchar(10)
+);
+
+create table enrolledin(
+   sid int,
+   cid char(7),
+   grade varchar(3),
+   primary key (sid,cid),
+   foreign key (sid) references students(sid),
+   foreign key (cid) references courses(cid)
+);
